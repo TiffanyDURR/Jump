@@ -1,0 +1,150 @@
+/* GLOBAL */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body {
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+/* LAYOUT */
+section {
+  display: flex;
+  gap: 20px;
+}
+
+/* ZONE DE JEU */
+#jeu {
+  position: relative;
+  width: 1400px;
+  height: 800px;
+  background-image: url("decor.png");
+  background-repeat: repeat-x;
+  overflow: hidden;
+  border-radius: 40px;
+}
+
+/* === OVERLAYS DE FOND (PNG TRANSPARENTS) === */
+#overlay1,
+#overlay2 {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 800px;
+  width: auto;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
+#overlay1 {
+  z-index: 10;
+}
+
+#overlay2 {
+  z-index: 20;
+}
+
+/* OBSTACLES */
+#obstacles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.obstacle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 200;
+}
+
+/* OVERLAYS OBSTACLES */
+.overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 150;
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.overlay-bas {
+  bottom: 0;
+}
+
+.overlay-haut {
+  top: 0;
+}
+
+/* LICORNE */
+#licorne {
+  position: absolute;
+  left: 120px;
+  bottom: 0;
+  width: 80px;
+  z-index: 300;
+}
+
+/* OVERLAY LICORNE */
+#licorne-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 250;
+  width: auto !important;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* HITBOX CIRCULAIRE VISUELLE */
+#hitbox-debug {
+  position: absolute;
+  border: 2px solid red;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* SCORE */
+#score {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 800;
+  color: white;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* TABLEAU SCORES */
+#tableau-des-scores {
+  height: 800px;
+  width: 260px;
+  background-color: aliceblue;
+  border-radius: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+/* POPUP GAME OVER */
+#game-over {
+  display: none;
+  z-index: 1000;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

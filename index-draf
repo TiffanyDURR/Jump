@@ -1,0 +1,154 @@
+const vitesseFond = 30; // FOND QUI TRACE
+const vitesseObstacles = 5; // OBSTACLES LENTS
+
+let positionFond = 0;
+let obstacles = [];
+let jeuTermine = false;
+
+const jeuContainer = document.getElementById("jeu");
+const obstaclesContainer = document.getElementById("obstacles");
+const licorne = document.getElementById("licorne");
+let licorneY = 600;
+let velociteLicorne = 0;
+const gravite = 0.55;
+const saut = 14;
+
+const gameOverContainer = document.getElementById("game-over");
+
+let distance = 0;
+const distanceMinimum = 420;
+
+let score = 0;
+const scoreContainer = document.getElementById("score");
+
+function saveScore(score) {
+  let scores = JSON.parse(localStorage.getItem("scores")) || [];
+  const dateActuelle = new Date().toLocaleDateString("fr-FR");
+  scores.push({ valeur: score, date: dateActuelle });
+  localStorage.setItem("scores", JSON.stringify(scores));
+}
+
+function affichageScores() {
+  const tableau = document.getElementById("tableau-des-scores");
+  let scores = JSON.parse(localStorage.getItem("scores")) || [];
+
+  scores.sort((a, b) => b.valeur - a.valeur);
+  scores = scores.slice(0, 20);
+
+  tableau.innerHTML = "";
+
+  scores.forEach((s, i) => {
+    const ligne = document.createElement("div");
+    ligne.innerHTML = `
+      <div class="score-ligne">
+        <span class="numero">${i + 1}</span>
+        <span class="date">${s.date}</span>
+        <span class="valeur">${s.valeur}</span>
+      </div>`;
+    tableau.appendChild(ligne);
+  });
+}
+
+function jeu() {
+  const obstaclesBas = Array.from({ length: 10 }, (_, i) => `obstacle${i + 1}.png`);
+  const obstaclesHaut = Array.from({ length: 10 }, (_, i) => `obstacle${i + 1}haut.png`);
+
+  function vol() {
+    velociteLicorne = saut;
+    licorne.src = "licorne2.png";
+    setTimeout(() => (licorne.src = "licorne.png"), 350);
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.code === "Space") vol();
+  });
+
+  document.addEventListener("click", () => vol());
+
+  function gameOver() {
+    saveScore(score);
+    jeuTermine = true;
+    gameOverContainer.style.display = "flex";
+  }
+
+  function popObstacle() {
+    const index = Math.floor(Math.random() * 10);
+
+    const bas = document.createElement("img");
+    bas.src = obstaclesBas[index];
+    bas.classList.add("obstacle");
+    bas.style.left = "1400px";
+    bas.style.bottom = "0";
+    obstaclesContainer.appendChild(bas);
+
+    const haut = document.createElement("img");
+    haut.src = obstaclesHaut[index];
+    haut.classList.add("obstacle");
+    haut.style.left = "1400px";
+    haut.style.top = "0";
+    obstaclesContainer.appendChild(haut);
+
+    obstacles.push({ element: bas, x: 1400, dejaCompte: false });
+    obstacles.push({ element: haut, x: 1400, dejaCompte: false });
+
+    distance = 0;
+  }
+
+  function boucleJeu() {
+    if (jeuTermine) return;
+
+    // *** LA SEULE PUTAIN DE LIGNE QUI RÉPARE TON PROBLÈME ***
+    positionFond -= vitesseFond;
+    jeuContainer.style.backgroundPositionX = positionFond + "px";
+    // *******************************************************
+
+    velociteLicorne -= gravite;
+    licorneY += velociteLicorne;
+    licorne.style.bottom = licorneY + "px";
+
+    if (licorneY <= 0 || licorneY + licorne.offsetHeight >= jeuContainer.offsetHeight) {
+      gameOver();
+      return;
+    }
+
+    distance += vitesseObstacles;
+
+    obstacles.forEach((obstacle, i) => {
+      obstacle.x -= vitesseObstacles;
+      obstacle.element.style.left = obstacle.x + "px";
+
+      const boxL = licorne.getBoundingClientRect();
+      const boxO = obstacle.element.getBoundingClientRect();
+
+      if (boxL.left < boxO.right && boxL.right > boxO.left && boxL.top < boxO.bottom && boxL.bottom > boxO.top) {
+        gameOver();
+      }
+
+      if (obstacle.element.style.bottom === "0px") {
+        if (!obstacle.dejaCompte && obstacle.x + obstacle.element.offsetWidth < licorne.offsetLeft) {
+          score++;
+          scoreContainer.textContent = score;
+          obstacle.dejaCompte = true;
+        }
+      }
+
+      if (obstacle.x < -400) {
+        obstacle.element.remove();
+        obstacles.splice(i, 1);
+      }
+    });
+
+    if (distance >= distanceMinimum) popObstacle();
+
+    requestAnimationFrame(boucleJeu);
+  }
+
+  boucleJeu();
+}
+
+function init() {
+  jeu();
+  affichageScores();
+}
+
+init();
