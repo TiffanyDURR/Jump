@@ -8,11 +8,11 @@ let licorneOverlay = null;
 let hitboxDebug = null;
 
 let overlay1 = null;
-let overlay1_clone = null;
+let overlay1Clone = null;
 let overlay2 = null;
-let overlay2_clone = null;
-let overlay1_x = 0;
-let overlay2_x = 0;
+let overlay2Clone = null;
+let overlay1X = 0;
+let overlay2X = 0;
 const vitesseOverlay1 = 2.5;
 const vitesseOverlay2 = 4.7;
 
@@ -56,7 +56,7 @@ function affichageScores() {
   });
 }
 
-function collisionCirculaire(licorne, obstacle) {
+function collisionRadius(licorne, obstacle) {
   const L = licorne.getBoundingClientRect();
   const O = obstacle.getBoundingClientRect();
   const centreX = L.left + L.width / 2;
@@ -70,10 +70,22 @@ function collisionCirculaire(licorne, obstacle) {
 }
 
 function jeu() {
-  const obstaclesBas = Array.from({ length: 10 }, (_, i) => `obstacle${i + 1}.png`);
-  const obstaclesHaut = Array.from({ length: 10 }, (_, i) => `obstacle${i + 1}haut.png`);
-  const overlaysBas = Array.from({ length: 10 }, (_, i) => `obstacle${i + 1}-overlay.png`);
-  const overlaysHaut = Array.from({ length: 10 }, (_, i) => `obstacle${i + 1}-overlay-haut.png`);
+  const obstaclesBas = Array.from(
+    { length: 10 },
+    (_, i) => `obstacle${i + 1}.png`
+  );
+  const obstaclesHaut = Array.from(
+    { length: 10 },
+    (_, i) => `obstacle${i + 1}haut.png`
+  );
+  const overlaysBas = Array.from(
+    { length: 10 },
+    (_, i) => `obstacle${i + 1}-overlay.png`
+  );
+  const overlaysHaut = Array.from(
+    { length: 10 },
+    (_, i) => `obstacle${i + 1}-overlay-haut.png`
+  );
 
   licorneOverlay = document.createElement("img");
   licorneOverlay.src = "licorne-overlay.png";
@@ -92,13 +104,13 @@ function jeu() {
   overlay1.style.bottom = "0px";
   jeuContainer.appendChild(overlay1);
 
-  overlay1_clone = document.createElement("img");
-  overlay1_clone.src = "overlaybackground1.png";
-  overlay1_clone.id = "overlay1b";
-  overlay1_clone.style.position = "absolute";
-  overlay1_clone.style.left = overlay1.width + "px";
-  overlay1_clone.style.bottom = "0px";
-  jeuContainer.appendChild(overlay1_clone);
+  overlay1Clone = document.createElement("img");
+  overlay1Clone.src = "overlaybackground1.png";
+  overlay1Clone.id = "overlay1b";
+  overlay1Clone.style.position = "absolute";
+  overlay1Clone.style.left = overlay1.width + "px";
+  overlay1Clone.style.bottom = "0px";
+  jeuContainer.appendChild(overlay1Clone);
 
   overlay2 = document.createElement("img");
   overlay2.src = "overlaybackground2.png";
@@ -108,13 +120,13 @@ function jeu() {
   overlay2.style.bottom = "0px";
   jeuContainer.appendChild(overlay2);
 
-  overlay2_clone = document.createElement("img");
-  overlay2_clone.src = "overlaybackground2.png";
-  overlay2_clone.id = "overlay2b";
-  overlay2_clone.style.position = "absolute";
-  overlay2_clone.style.left = overlay2.width + "px";
-  overlay2_clone.style.bottom = "0px";
-  jeuContainer.appendChild(overlay2_clone);
+  overlay2Clone = document.createElement("img");
+  overlay2Clone.src = "overlaybackground2.png";
+  overlay2Clone.id = "overlay2b";
+  overlay2Clone.style.position = "absolute";
+  overlay2Clone.style.left = overlay2.width + "px";
+  overlay2Clone.style.bottom = "0px";
+  jeuContainer.appendChild(overlay2Clone);
 
   function updateLicorneOverlay() {
     const wL = licorne.width;
@@ -154,17 +166,17 @@ function jeu() {
   }
 
   function updateOverlayImages() {
-    overlay1_x -= vitesseOverlay1;
-    overlay2_x -= vitesseOverlay2;
+    overlay1X -= vitesseOverlay1;
+    overlay2X -= vitesseOverlay2;
 
-    overlay1.style.left = overlay1_x + "px";
-    overlay1_clone.style.left = overlay1_x + overlay1.width + "px";
+    overlay1.style.left = overlay1X + "px";
+    overlay1Clone.style.left = overlay1X + overlay1.width + "px";
 
-    overlay2.style.left = overlay2_x + "px";
-    overlay2_clone.style.left = overlay2_x + overlay2.width + "px";
+    overlay2.style.left = overlay2X + "px";
+    overlay2Clone.style.left = overlay2X + overlay2.width + "px";
 
-    if (overlay1_x <= -overlay1.width) overlay1_x = 0;
-    if (overlay2_x <= -overlay2.width) overlay2_x = 0;
+    if (overlay1X <= -overlay1.width) overlay1X = 0;
+    if (overlay2X <= -overlay2.width) overlay2X = 0;
   }
 
   function createObstacle(type, index) {
@@ -179,7 +191,10 @@ function jeu() {
     obstacle.onload = () => {
       const overlay = document.createElement("img");
       overlay.src = type === "bas" ? overlaysBas[index] : overlaysHaut[index];
-      overlay.classList.add("overlay", type === "bas" ? "overlay-bas" : "overlay-haut");
+      overlay.classList.add(
+        "overlay",
+        type === "bas" ? "overlay-bas" : "overlay-haut"
+      );
       overlay.style.visibility = "hidden";
       obstaclesContainer.appendChild(overlay);
 
@@ -220,7 +235,10 @@ function jeu() {
 
     updateLicorneOverlay();
 
-    if (licorneY <= 0 || licorneY + licorne.offsetHeight >= jeuContainer.offsetHeight) {
+    if (
+      licorneY <= 0 ||
+      licorneY + licorne.offsetHeight >= jeuContainer.offsetHeight
+    ) {
       gameOver();
       return;
     }
@@ -235,10 +253,13 @@ function jeu() {
       const ovW = obs.overlay.width;
       obs.overlay.style.left = obs.x + obsW / 2 - ovW / 2 + "px";
 
-      if (collisionCirculaire(licorne, obs.element)) gameOver();
+      if (collisionRadius(licorne, obs.element)) gameOver();
 
       if (obs.element.style.bottom === "0px") {
-        if (!obs.dejaCompte && obs.x + obs.element.offsetWidth < licorne.offsetLeft) {
+        if (
+          !obs.dejaCompte &&
+          obs.x + obs.element.offsetWidth < licorne.offsetLeft
+        ) {
           score++;
           scoreContainer.innerHTML = score;
           obs.dejaCompte = true;
@@ -266,3 +287,12 @@ function init() {
 }
 
 init();
+
+function startMusic() {
+  const audio = document.getElementById("bgm");
+  audio.volume = 0.02;
+  audio.play().catch(() => {});
+}
+
+window.addEventListener("click", startMusic, { once: true });
+window.addEventListener("keydown", startMusic, { once: true });
